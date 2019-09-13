@@ -3,9 +3,9 @@
 #Import configuration
 . conf
 
-#Questions
-QDOMAIN="What Domain?"
-QOUTPUT="JSON or XML?"
+# Questionscurl -XGET MAIN="What Domain?"
+QDOMAIN='enter the domain name'
+QOUTPUT="json or xml? write your full answer"
 
 function input_domain() {
 echo "$QDOMAIN"
@@ -15,30 +15,26 @@ echo "$QDOMAIN"
 }
 
 echo "What tool do you want to run?"
-echo -e "\nPropagation [p]\nChinese Firewall Test [c]\nRecord Lookup [r]\nPort Scanner [ps]\nTraceroute [t]\nMAC Address Lookup [m]"
-read tool
+echo -e "-Reverse Who Is [rwhois]\n-IP history [iph]\n-Reverse IP [rip]\n"
+if [ -z "$1" ]
+  then
+    echo "No argument supplied"
+    read tool
+else
+  tool = $1
+  echo $tool
+fi
 
-if [ $tool == 'propagation' ] || [ $tool == 'p' ]; then
+if [ $tool == 'reversewhois' ] || [ $tool == 'rwhois' ]; then
 	input_domain
-		GET "http://pro.viewdns.info/propagation/?domain=$domain&apikey=$APIKEY&output=$output"
+		curl -XGET "http://pro.viewdns.info/reversewhois/?host=$domain&apikey=$APIKEY&output=$output" > output.json
 
-elif [ $tool == 'c' ]; then
-	input_domain
-		GET "http://pro.viewdns.info/chinesefirewall/?domain=$domain&apikey=$APIKEY&output=$output"
+elif [ $tool == 'iphistory' ] || [ $tool == 'iph' ]; then
+  input_domain
+      curl -XGET "https://api.viewdns.info/iphistory/?host=$domain&apikey=$APIKEY&output=$output" > output.json
 
-elif [ $tool == 'record' ] || [ $tool == 'r' ]; then
-	input_domain
-		GET "http://pro.viewdns.info/dnsrecord/?domain=$domain&apikey=$APIKEY&output=$output"
 
-elif [ $tool == 'port scanner' ] || [ $tool == 'ps' ]; then
+elif [ $tool == 'reverseip' ] || [ $tool == 'rip' ]; then
 	input_domain
-		GET "http://pro.viewdns.info/portscan/?host=$domain&apikey=$APIKEY&output=$output"
-
-elif [ $tool == 'traceroute' ] || [ $tool == 't' ]; then
-	input_domain
-		GET "http://pro.viewdns.info/traceroute/?domain=$domain&apikey=$APIKEY&output=$output"
-
-elif [ $tool == 'mac' ] || [ $tool == 'm' ]; then 
-	input_domain
-		GET "http://pro.viewdns.info/maclookup/?mac=$domain&apikey=$APIKEY&output=$output"
+    curl -XGET "https://api.viewdns.info/reverseip/?host=$domain&apikey=$APIKEY&output=$output" > output.json
 fi
